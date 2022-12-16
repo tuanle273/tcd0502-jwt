@@ -6,6 +6,7 @@ const app = express();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 app.use(express.json());
+const auth = require("./middleware/auth");
 
 const { TOKEN_KEY } = process.env;
 
@@ -14,6 +15,7 @@ app.post("/register", async (req, res) => {
   try {
     // Get Input from request body
     const { first_name, last_name, email, password } = req.body;
+    console.log(first_name, last_name);
     // Validate Input
     if (!(email && password && last_name && first_name)) {
       return res.status(400).send({ message: "All input must be valid" });
@@ -76,6 +78,11 @@ app.post("/login", async (req, res) => {
 
   user.token = token;
   return res.status(200).send(user);
+});
+
+// Welcome
+app.get("/welcome", auth, (req, res) => {
+  return res.status(200).send(req.user);
 });
 
 module.exports = app;
